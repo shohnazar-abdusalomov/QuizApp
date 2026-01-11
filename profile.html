@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz Game – Profile</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Outfit:wght@700;900&display=swap" rel="stylesheet">
+
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+tailwind.config={
+  theme:{
+    extend:{
+      colors:{
+        background:'var(--background)',
+        foreground:'var(--foreground)',
+        card:'var(--card)',
+        primary:'var(--primary)',
+        secondary:'var(--secondary)',
+        accent:'var(--accent)',
+        muted:'var(--muted)',
+        danger:'#ef4444'
+      }
+    }
+  }
+}
+</script>
+
+<style>
+:root{
+--background:#0a0f1e;
+--foreground:#f8fafc;
+--card:#1a1f35;
+--primary:#8b5cf6;
+--secondary:#ec4899;
+--accent:#06b6d4;
+--muted:#2d3548
+}
+.light-mode{
+--background:#ffffff;
+--foreground:#1e293b;
+--card:#f1f5f9;
+--primary:#7c3aed;
+--secondary:#db2777;
+--accent:#0891b2;
+--muted:#e2e8f0
+}
+body{
+background:var(--background);
+color:var(--foreground);
+font-family:'Plus Jakarta Sans',sans-serif
+}
+input{
+font-size:15px
+}
+</style>
+</head>
+
+<body>
+<div class="min-h-screen pb-32 flex flex-col">
+
+<!-- HEADER -->
+<header class="px-4 pt-4 pb-3 flex justify-between items-center">
+  <div>
+    <h1 class="text-3xl font-black text-primary font-[Outfit]">Profile</h1>
+    <p class="text-sm text-muted-foreground">Your quiz identity</p>
+  </div>
+  <button id="themeToggleBtn"
+    class="w-10 h-10 rounded-full bg-card/60 border border-white/10 flex items-center justify-center">
+    <iconify-icon id="themeIcon" icon="lucide:moon" width="18"></iconify-icon>
+  </button>
+</header>
+
+<main class="flex-1 px-4 space-y-7">
+
+<!-- PROFILE CARD -->
+<section class="bg-card/40 rounded-3xl p-6 border border-white/5 space-y-4">
+
+  <div class="flex items-center gap-4">
+
+    <!-- AVATAR -->
+    <label class="relative w-24 h-24 rounded-full bg-primary/20 flex items-center justify-center cursor-pointer overflow-hidden border border-white/10">
+      <img id="avatarImg" class="absolute inset-0 w-full h-full object-cover hidden"/>
+      <iconify-icon icon="lucide:camera" width="24" class="text-primary"></iconify-icon>
+      <input type="file" id="avatarInput" accept="image/*" class="hidden"/>
+    </label>
+
+    <!-- USER -->
+    <div class="flex-1 space-y-1">
+      <h2 id="usernameDisplay"
+          class="transition-all duration-300 ease-out">
+      </h2>
+
+      <span id="usernameSaved"
+         class="block mt-2 text-xs text-accent
+         opacity-0 transition-opacity duration-300">
+          Saved ✓
+      </span>
+
+
+
+     <input
+         id="usernameInput"
+         placeholder="Enter username"
+         class="hidden w-full max-w-xs px-3 py-2 rounded-xl
+                  bg-card border border-white/20
+                  text-white placeholder:text-gray-400
+                  focus:border-primary focus:ring-2 focus:ring-primary/40
+                  outline-none"
+      />
+
+
+
+
+
+
+
+      <p class="text-sm text-muted-foreground">Tap name or avatar to edit</p>
+    </div>
+
+    <button onclick="openSettings()"
+      class="p-2 rounded-xl bg-card/60 border border-white/10">
+      <iconify-icon icon="lucide:settings"></iconify-icon>
+    </button>
+
+  </div>
+</section>
+
+<!-- STATS -->
+<section>
+<h3 class="text-base font-bold mb-2">Statistics</h3>
+<div class="grid grid-cols-3 gap-3">
+  <div class="bg-card/40 rounded-2xl p-4 text-center">
+    <p class="text-sm text-muted-foreground">Games</p>
+    <p id="gamesPlayed" class="text-2xl font-black text-primary">0</p>
+  </div>
+  <div class="bg-card/40 rounded-2xl p-4 text-center">
+    <p class="text-sm text-muted-foreground">Best</p>
+    <p id="bestScore" class="text-2xl font-black text-accent">0</p>
+  </div>
+  <div class="bg-card/40 rounded-2xl p-4 text-center">
+    <p class="text-sm text-muted-foreground">Total</p>
+    <p id="totalScore" class="text-2xl font-black text-secondary">0</p>
+  </div>
+</div>
+</section>
+
+<!-- ACHIEVEMENTS -->
+<section>
+<h3 class="text-base font-bold mb-2">Achievements</h3>
+<div id="badges" class="grid grid-cols-4 gap-3"></div>
+</section>
+
+<!-- CHART -->
+<section class="bg-card/40 rounded-2xl p-4">
+<h3 class="text-base font-bold mb-2">Score History</h3>
+<canvas id="scoreChart" height="120"></canvas>
+</section>
+
+</main>
+
+<!-- SETTINGS MODAL -->
+<div id="settingsModal"
+ class="fixed inset-0 bg-black/50 backdrop-blur hidden z-50 flex items-end"
+ onclick="if(event.target===this)closeSettings()">
+
+<div class="bg-background w-full rounded-t-3xl p-6 space-y-4">
+
+<h3 class="text-xl font-black">Account Settings</h3>
+
+<div class="space-y-2">
+<button class="w-full py-3 rounded-xl border border-white/10 text-left">
+Change Password (coming soon)
+</button>
+
+<button onclick="logout()"
+ class="w-full py-3 rounded-xl border border-white/10 text-left">
+Logout
+</button>
+
+<button onclick="clearCache()"
+ class="w-full py-3 rounded-xl border border-danger/40 text-danger text-left">
+Clear All Data
+</button>
+</div>
+
+<button onclick="closeSettings()"
+ class="w-full py-3 rounded-xl bg-primary text-white font-bold">
+Done
+</button>
+
+</div>
+</div>
+
+<!-- NAVBAR -->
+<nav class="fixed bottom-0 w-full bg-background/80 backdrop-blur-xl border-t border-white/5">
+<div class="flex justify-around items-center h-[70px]">
+<button onclick="location.href='play---quiz.html'" class="flex flex-col items-center gap-1 text-muted-foreground">
+<iconify-icon icon="lucide:gamepad-2" width="24"></iconify-icon><span class="text-xs">Play</span>
+</button>
+<button onclick="location.href='leaderboard.html'" class="flex flex-col items-center gap-1 text-muted-foreground">
+<iconify-icon icon="lucide:trophy" width="24"></iconify-icon><span class="text-xs">Rank</span>
+</button>
+<div class="flex flex-col items-center gap-1 text-primary">
+<iconify-icon icon="lucide:user" width="24"></iconify-icon><span class="text-xs font-bold">Profile</span>
+</div>
+<button onclick="location.href='play---quiz.html#settings'" class="flex flex-col items-center gap-1 text-muted-foreground">
+<iconify-icon icon="lucide:settings" width="24"></iconify-icon><span class="text-xs">Settings</span>
+</button>
+</div>
+</nav>
+</div>
+
+<script>
+/* ===== DOM ===== */
+const themeToggleBtn   = document.getElementById('themeToggleBtn');
+const themeIcon        = document.getElementById('themeIcon');
+
+const usernameDisplay  = document.getElementById('usernameDisplay');
+const usernameInput    = document.getElementById('usernameInput');
+const usernameSaved    = document.getElementById('usernameSaved');
+
+const avatarInput      = document.getElementById('avatarInput');
+const avatarImg        = document.getElementById('avatarImg');
+
+const gamesPlayed      = document.getElementById('gamesPlayed');
+const bestScore        = document.getElementById('bestScore');
+const totalScore       = document.getElementById('totalScore');
+
+const badgesEl         = document.getElementById('badges');
+
+/* ===== THEME ===== */
+if (localStorage.quiz_theme === 'light') {
+  document.body.classList.add('light-mode');
+  themeIcon.icon = 'lucide:sun';
+}
+
+themeToggleBtn.onclick = () => {
+  document.body.classList.toggle('light-mode');
+  const light = document.body.classList.contains('light-mode');
+  localStorage.quiz_theme = light ? 'light' : 'dark';
+  themeIcon.icon = light ? 'lucide:sun' : 'lucide:moon';
+};
+
+/* ===== USER (SINGLE SOURCE) ===== */
+let user = JSON.parse(
+  localStorage.quiz_user || '{"username":"Guest","avatar":""}'
+);
+
+usernameDisplay.textContent = user.username;
+
+if (user.avatar) {
+  avatarImg.src = user.avatar;
+  avatarImg.classList.remove('hidden');
+}
+
+/* ===== EDIT NAME (SMOOTH) ===== */
+usernameDisplay.onclick = () => {
+  usernameDisplay.classList.add('opacity-0','scale-95');
+
+  setTimeout(() => {
+    usernameDisplay.classList.add('hidden');
+    usernameInput.value = user.username;
+    usernameInput.classList.remove('hidden');
+
+    requestAnimationFrame(() => {
+      usernameInput.focus();
+    });
+  }, 200);
+};
+
+usernameInput.onkeydown = (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    saveUsername();
+  }
+};
+
+function saveUsername() {
+  const val = usernameInput.value.trim() || 'Guest';
+
+  user.username = val;
+  localStorage.quiz_user = JSON.stringify(user);
+
+
+  setTimeout(() => {
+    usernameInput.classList.add('hidden');
+
+    usernameDisplay.textContent = val;
+    usernameDisplay.classList.remove('hidden');
+
+    requestAnimationFrame(() => {
+      usernameDisplay.classList.remove('opacity-0','scale-95');
+      usernameDisplay.classList.add('opacity-100','scale-100');
+
+      usernameSaved.classList.remove('opacity-0');
+      setTimeout(() => usernameSaved.classList.add('opacity-0'), 1200);
+    });
+  }, 200);
+}
+
+/* ===== AVATAR ===== */
+avatarInput.onchange = () => {
+  const file = avatarInput.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = () => {
+    user.avatar = reader.result;
+    localStorage.quiz_user = JSON.stringify(user);
+    avatarImg.src = user.avatar;
+    avatarImg.classList.remove('hidden');
+  };
+  reader.readAsDataURL(file);
+};
+
+/* ===== STATS ===== */
+gamesPlayed.textContent = localStorage.games_played || 0;
+bestScore.textContent   = localStorage.best_score || 0;
+totalScore.textContent  = localStorage.total_score || 0;
+
+/* ===== ACHIEVEMENTS ===== */
+const earned = JSON.parse(localStorage.achievements || '[]');
+
+[
+  { id:'first',  icon:'lucide:star',  label:'First Game' },
+  { id:'pro',    icon:'lucide:zap',   label:'100+ Score' },
+  { id:'master', icon:'lucide:crown', label:'500 Total' },
+  { id:'legend', icon:'lucide:award', label:'10 Games' }
+].forEach(b => {
+  const el = document.createElement('div');
+  el.className =
+    `rounded-2xl p-3 text-center ${
+      earned.includes(b.id)
+        ? 'bg-primary/20'
+        : 'bg-card/30 opacity-40'
+    }`;
+
+  el.innerHTML = `
+    <iconify-icon icon="${b.icon}" width="22"></iconify-icon>
+    <p class="text-xs mt-1">${b.label}</p>
+  `;
+  badgesEl.appendChild(el);
+});
+
+/* ===== CHART ===== */
+const history = JSON.parse(localStorage.game_history || '[]');
+if (history.length && window.Chart) {
+  new Chart(scoreChart, {
+    type: 'line',
+    data: {
+      labels: history.map((_, i) => i + 1),
+      datasets: [{
+        data: history.map(h => h.score),
+        borderWidth: 2,
+        tension: 0.4
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: { y: { beginAtZero: true } }
+    }
+  });
+}
+
+/* ===== SETTINGS ===== */
+function openSettings() {
+  settingsModal.classList.remove('hidden');
+}
+function closeSettings() {
+  settingsModal.classList.add('hidden');
+}
+function logout() {
+  localStorage.removeItem('quiz_user');
+  location.reload();
+}
+function clearCache() {
+  if (confirm('Delete all data?')) {
+    localStorage.clear();
+    location.reload();
+  }
+}
+
+document.addEventListener('click', (e) => {
+  if (
+    !usernameInput.classList.contains('hidden') &&
+    !usernameInput.contains(e.target) &&
+    !usernameDisplay.contains(e.target)
+  ) {
+    saveUsername();
+  }
+});
+
+</script>
+
+
+</body>
+</html>
