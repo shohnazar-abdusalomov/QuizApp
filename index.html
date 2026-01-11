@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Game - Home</title>
+
+  <!-- Google Fonts Preconnect -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Outfit:wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Playfair+Display:wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=JetBrains+Mono:wght@0,300;0,400;0,500;0,600;0,700;0,800&display=swap" rel="stylesheet" />
+
+  <!-- Tailwind CSS v3 CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <!-- Iconify Icons -->
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: 'var(--background)',
+            foreground: 'var(--foreground)',
+            card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
+            primary: { DEFAULT: 'var(--primary)', foreground: 'var(--primary-foreground)' },
+            secondary: { DEFAULT: 'var(--secondary)', foreground: 'var(--secondary-foreground)' },
+            muted: { DEFAULT: 'var(--muted)', foreground: 'var(--muted-foreground)' },
+            accent: { DEFAULT: 'var(--accent)', foreground: 'var(--accent-foreground)' },
+            destructive: { DEFAULT: 'var(--destructive)', foreground: '#ffffff' },
+            border: 'var(--border)',
+          },
+          fontFamily: {
+            sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+            heading: ['var(--font-heading)', 'system-ui', 'sans-serif'],
+          },
+          borderRadius: { lg: 'var(--radius)', xl: 'calc(var(--radius) + 4px)', '2xl': 'calc(var(--radius) + 8px)', '3xl': 'calc(--radius) + 12px)' },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    :root {
+      --background: #0a0f1e;
+      --foreground: #f8fafc;
+      --card: #1a1f35;
+      --card-foreground: #ffffff;
+      --primary: #8b5cf6;
+      --primary-foreground: #ffffff;
+      --secondary: #ec4899;
+      --secondary-foreground: #ffffff;
+      --muted: #2d3548;
+      --muted-foreground: #94a3b8;
+      --accent: #06b6d4;
+      --accent-foreground: #ffffff;
+      --destructive: #ef4444;
+      --border: #2d3548;
+      --glow-primary: rgba(139, 92, 246, 0.15);
+      --glow-secondary: rgba(236, 72, 153, 0.1);
+      --radius: 24px;
+      --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+      --font-heading: "Outfit", system-ui, sans-serif;
+    }
+
+    .light-mode {
+      --background: #ffffff;
+      --foreground: #1e293b;
+      --card: #f1f5f9;
+      --card-foreground: #1e293b;
+      --primary: #7c3aed;
+      --primary-foreground: #ffffff;
+      --secondary: #db2777;
+      --secondary-foreground: #ffffff;
+      --muted: #e2e8f0;
+      --muted-foreground: #64748b;
+      --accent: #0891b2;
+      --accent-foreground: #ffffff;
+      --destructive: #dc2626;
+      --border: #e2e8f0;
+      --glow-primary: rgba(124, 58, 237, 0.08);
+      --glow-secondary: rgba(219, 39, 119, 0.06);
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--background);
+      color: var(--foreground);
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                  color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .light-mode .bg-card\/40 {
+      background-color: rgba(241, 245, 249, 0.7) !important;
+    }
+
+    .light-mode .bg-card\/80 {
+      background-color: rgba(241, 245, 249, 0.9) !important;
+    }
+
+    .light-mode .border-white\/5,
+    .light-mode .border-white\/10 {
+      border-color: rgba(226, 232, 240, 0.6) !important;
+    }
+
+    .light-mode .shadow-primary\/5,
+    .light-mode .shadow-primary\/20 {
+      box-shadow: 0 4px 12px var(--glow-primary) !important;
+    }
+
+    .light-mode .bg-primary\/20 {
+      background-color: rgba(124, 58, 237, 0.12) !important;
+    }
+
+    .light-mode .bg-primary\/10 {
+      background-color: rgba(124, 58, 237, 0.08) !important;
+    }
+
+    .light-mode .text-foreground {
+      color: var(--foreground) !important;
+    }
+
+    /* Smooth transitions for all theme-dependent elements */
+    * {
+      transition-property: background-color, border-color, color, fill, stroke, box-shadow;
+      transition-duration: 0.3s;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Preserve specific transitions */
+    button, a, [role="button"] { 
+      transition: all 0.15s ease !important; 
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    /* Light mode glow effects */
+    .light-mode .blur-\[100px\],
+    .light-mode .blur-\[80px\],
+    .light-mode .blur-\[60px\] {
+      opacity: 0.4;
+    }
+  </style>
+  <script src="i18n.js"></script>
+</head>
+<body>
+  <div class="relative min-h-screen bg-background text-foreground font-sans flex flex-col overflow-hidden selection:bg-primary/30">
+  
+  <!-- Ambient Background Glows -->
+  <div class="absolute top-[-10%] right-[-20%] w-[350px] h-[350px] bg-primary/20 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
+  <div class="absolute bottom-[20%] left-[-10%] w-[300px] h-[300px] bg-secondary/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+  <!-- Main Content Scroll Area -->
+  <div class="flex-1 overflow-y-auto pb-24 no-scrollbar">
+    
+    <!-- Header Section -->
+    <header class="px-6 pt-12 pb-4 flex justify-between items-center">
+      <div id="userGreeting" class="hidden">
+        <p class="text-muted-foreground text-sm font-medium mb-1" data-i18n="welcome_back">Welcome back,</p>
+        <h1 class="text-3xl font-black tracking-tight text-foreground flex items-center gap-2">
+          <span id="usernameName">Player</span> <iconify-icon icon="lucide:sparkles" class="text-accent text-2xl animate-pulse"></iconify-icon>
+        </h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="themeToggleBtn" class="w-12 h-12 rounded-full bg-card border border-white/10 flex items-center justify-center shadow-lg shadow-primary/5 cursor-pointer hover:bg-card/70 transition-all hover:scale-105 active:scale-95">
+          <iconify-icon id="themeIcon" icon="lucide:moon" class="text-foreground text-xl transition-all"></iconify-icon>
+        </button>
+        <div id="notificationWrap" class="relative w-12 h-12 rounded-full bg-card border border-white/10 flex items-center justify-center shadow-lg shadow-primary/5 cursor-pointer hover:bg-card/70 transition-all hover:scale-105 active:scale-95">
+          <iconify-icon id="notificationBtn" icon="lucide:bell" class="text-foreground text-xl"></iconify-icon>
+          <div id="notificationDropdown" class="hidden absolute right-0 mt-12 w-64 bg-card/90 backdrop-blur-md border border-white/5 rounded-lg p-3 shadow-xl">
+            <p class="text-sm font-bold mb-2" data-i18n="notifications">Notifications</p>
+            <div id="notificationsList" class="text-xs text-muted-foreground">
+              <div class="py-2" data-i18n="no_notifications">No new notifications</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 3D Illustration Area -->
+    <div class="relative w-full h-64 flex items-center justify-center my-4">
+      <div class="absolute w-40 h-40 bg-gradient-to-r from-primary to-secondary rounded-full blur-[60px] opacity-60"></div>
+      
+      <div class="relative z-10 w-48 h-48">
+        <div class="absolute inset-0 bg-gradient-to-br from-primary via-primary/80 to-secondary rounded-[40px] shadow-2xl shadow-primary/30 rotate-6 flex items-center justify-center border-t border-white/20">
+          <iconify-icon icon="lucide:gamepad-2" class="text-white text-[80px] drop-shadow-md"></iconify-icon>
+        </div>
+        <div class="absolute -top-4 -right-4 w-12 h-12 bg-accent rounded-2xl -rotate-12 flex items-center justify-center shadow-lg shadow-accent/40 border-t border-white/30 animate-bounce" style="animation-duration: 3s;">
+          <iconify-icon icon="lucide:zap" class="text-white text-xl"></iconify-icon>
+        </div>
+        <div class="absolute -bottom-2 -left-6 w-14 h-14 bg-secondary rounded-full flex items-center justify-center shadow-lg shadow-secondary/40 border-t border-white/30 animate-bounce" style="animation-duration: 4s;">
+           <span class="text-white font-bold text-lg">XP</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- Configuration Card (Glass) -->
+    <div class="mx-4 bg-card/40 backdrop-blur-xl border border-white/5 rounded-[32px] p-6 shadow-xl ring-1 ring-white/5">
+      
+      <!-- Username Input -->
+      <div class="mb-8">
+        <label class="block text-sm font-medium text-muted-foreground mb-3 ml-1" data-i18n="username">Username</label>
+        <div class="group relative">
+          <div class="absolute inset-y-0 left-4 flex items-center pointer-events-none">
+            <iconify-icon icon="lucide:at-sign" class="text-primary text-xl"></iconify-icon>
+          </div>
+          <input id="usernameInput" type="text" value="" class="w-full bg-card border-2 border-primary/50 text-foreground text-lg font-semibold rounded-2xl py-4 pl-12 pr-4 focus:outline-none focus:border-primary focus:shadow-[0_0_20px_rgba(139,92,246,0.3)] transition-all placeholder:text-muted-foreground/60" data-i18n="enter_username" placeholder="Enter username">
+          <div class="absolute inset-y-0 right-4 flex items-center">
+            <iconify-icon icon="lucide:check-circle-2" class="text-accent text-xl"></iconify-icon>
+          </div>
+        </div>
+      </div>
+
+      <!-- Difficulty Selector -->
+      <div class="mb-2">
+        <div class="flex justify-between items-center mb-3 px-1">
+          <label class="text-sm font-medium text-muted-foreground" data-i18n="select_difficulty">Select Difficulty</label>
+          <span class="text-xs text-primary font-bold bg-primary/10 px-2 py-1 rounded-lg">x2</span>
+        </div>
+        
+        <div class="flex gap-3 overflow-x-auto pb-4 -mx-2 px-2 no-scrollbar snap-x">
+          <button data-difficulty="easy" class="snap-center shrink-0 flex-1 min-w-[100px] h-24 rounded-2xl bg-card border border-border/50 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-transform">
+            <div class="w-10 h-10 rounded-full bg-accent/10 flex items-center justify-center group-hover:bg-accent/20 transition-colors">
+              <iconify-icon icon="lucide:smile" class="text-accent text-xl"></iconify-icon>
+            </div>
+            <span class="text-accent font-semibold text-sm" data-i18n="easy">Easy</span>
+          </button>
+
+          <button data-difficulty="medium" class="snap-center shrink-0 flex-1 min-w-[100px] h-24 rounded-2xl bg-card border border-border/50 flex flex-col items-center justify-center gap-2 relative overflow-hidden shadow-[0_0_15px_rgba(139,92,246,0.2)]">
+            <div class="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center group-hover:bg-primary/20 transition-colors">
+              <iconify-icon icon="lucide:swords" class="text-primary text-xl"></iconify-icon>
+            </div>
+            <span class="text-primary font-semibold text-sm" data-i18n="medium">Medium</span>
+          </button>
+
+          <button data-difficulty="hard" class="snap-center shrink-0 flex-1 min-w-[100px] h-24 rounded-2xl bg-card border border-border/50 flex flex-col items-center justify-center gap-2 group active:scale-95 transition-transform opacity-70 hover:opacity-100">
+            <div class="w-10 h-10 rounded-full bg-destructive/10 flex items-center justify-center group-hover:bg-destructive/20 transition-colors">
+              <iconify-icon icon="lucide:skull" class="text-destructive text-xl"></iconify-icon>
+            </div>
+            <span class="text-destructive font-semibold text-sm" data-i18n="hard">Hard</span>
+          </button>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Quiz Settings -->
+    <div class="px-6 mt-8 mb-6">
+      <h3 class="text-sm font-bold text-primary mb-4" data-i18n="game_settings">Game Settings</h3>
+      <div class="grid grid-cols-2 gap-3">
+        <div>
+          <label class="text-xs text-muted-foreground block mb-1" data-i18n="language">Language</label>
+          <select id="homeSettingLanguage" class="w-full p-2 rounded-lg bg-card border border-border/50 text-foreground text-sm focus:border-primary outline-none transition appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml;utf8,<svg fill=\"%238b5cf6\" height=\"20\" viewBox=\"0 0 24 24\" width=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>'); background-repeat: no-repeat; background-position: right 6px center; background-size: 18px; padding-right: 28px;">
+            <option value="uzb">O'zbek</option>
+            <option value="eng">English</option>
+            <option value="rus">Русский</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-muted-foreground block mb-1" data-i18n="questions">Questions</label>
+          <select id="homeSettingAmount" class="w-full p-2 rounded-lg bg-card border border-border/50 text-foreground text-sm focus:border-primary outline-none transition appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml;utf8,<svg fill=\"%238b5cf6\" height=\"20\" viewBox=\"0 0 24 24\" width=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>'); background-repeat: no-repeat; background-position: right 6px center; background-size: 18px; padding-right: 28px;">
+            <option value="5">5</option>
+            <option value="10" selected>10</option>
+            <option value="15">15</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-muted-foreground block mb-1" data-i18n="time_question">Time/Question</label>
+          <select id="homeSettingTime" class="w-full p-2 rounded-lg bg-card border border-border/50 text-foreground text-sm focus:border-primary outline-none transition appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml;utf8,<svg fill=\"%238b5cf6\" height=\"20\" viewBox=\"0 0 24 24\" width=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>'); background-repeat: no-repeat; background-position: right 6px center; background-size: 18px; padding-right: 28px;">
+            <option value="5">5s</option>
+            <option value="10" selected>10s</option>
+            <option value="20">20s</option>
+          </select>
+        </div>
+        <div>
+          <label class="text-xs text-muted-foreground block mb-1" data-i18n="difficulty">Difficulty</label>
+          <select id="homeSettingDifficulty" class="w-full p-2 rounded-lg bg-card border border-border/50 text-foreground text-sm focus:border-primary outline-none transition appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml;utf8,<svg fill=\"%238b5cf6\" height=\"20\" viewBox=\"0 0 24 24\" width=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>'); background-repeat: no-repeat; background-position: right 6px center; background-size: 18px; padding-right: 28px;">
+            <option value="easy" data-i18n="easy">Easy</option>
+            <option value="medium" selected data-i18n="medium">Medium</option>
+            <option value="hard" data-i18n="hard">Hard</option>
+          </select>
+        </div>
+        <div class="col-span-2">
+          <label class="text-xs text-muted-foreground block mb-1" data-i18n="category">Category</label>
+          <select id="homeSettingCategory" class="w-full p-2 rounded-lg bg-card border border-border/50 text-foreground text-sm focus:border-primary outline-none transition appearance-none cursor-pointer" style="background-image: url('data:image/svg+xml;utf8,<svg fill=\"%238b5cf6\" height=\"20\" viewBox=\"0 0 24 24\" width=\"20\" xmlns=\"http://www.w3.org/2000/svg\"><path d=\"M7 10l5 5 5-5z\"/></svg>'); background-repeat: no-repeat; background-position: right 6px center; background-size: 18px; padding-right: 28px;">
+            <option value="any" data-i18n="any_category">Any Category</option>
+          </select>
+        </div>
+      </div>
+    </div>
+
+    <!-- Start Button Area -->
+    <div class="px-6 mt-4">
+      <button id="startQuizBtn" class="relative w-full h-16 rounded-[20px] overflow-hidden group active:scale-95 transition-all duration-200 shadow-xl shadow-primary/20">
+        <div class="absolute inset-0 bg-gradient-to-r from-primary to-secondary animate-pulse"></div>
+        <div class="absolute inset-0 bg-gradient-to-b from-white/10 to-transparent"></div>
+        <div class="relative flex items-center justify-center gap-3 h-full">
+          <span class="text-white font-black text-xl tracking-wide uppercase" data-i18n="start_quiz">Start Quiz</span>
+          <iconify-icon icon="lucide:arrow-right" class="text-white text-2xl group-hover:translate-x-1 transition-transform"></iconify-icon>
+        </div>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- Bottom Navigation -->
+  <nav class="fixed bottom-0 w-full bg-background/80 backdrop-blur-xl border-t border-white/5 pb-safe pt-2 z-50">
+    <div class="flex justify-around items-center h-[70px]">
+      
+      <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <div class="relative p-1.5 rounded-xl bg-primary/10 text-primary transition-all duration-300">
+          <iconify-icon icon="lucide:gamepad-2" width="24" height="24"></iconify-icon>
+          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"></div>
+        </div>
+        <span class="text-[10px] font-bold text-primary" data-i18n="play">Play</span>
+      </button>
+
+      <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <div class="p-1.5 text-muted-foreground group-hover:text-foreground transition-colors">
+          <iconify-icon icon="lucide:trophy" width="24" height="24"></iconify-icon>
+        </div>
+        <span class="text-[10px] font-medium text-muted-foreground group-hover:text-foreground" data-i18n="rank">Rank</span>
+      </button>
+ 
+      <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <div class="p-1.5 text-muted-foreground group-hover:text-foreground transition-colors">
+          <iconify-icon icon="lucide:user" width="24" height="24"></iconify-icon>
+        </div>
+        <span class="text-[10px] font-medium text-muted-foreground group-hover:text-foreground" data-i18n="profile">Profile</span>
+      </button>
+
+      <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <div class="p-1.5 text-muted-foreground group-hover:text-foreground transition-colors">
+          <iconify-icon icon="lucide:settings" width="24" height="24"></iconify-icon>
+        </div>
+        <span class="text-[10px] font-medium text-muted-foreground group-hover:text-foreground" data-i18n="settings">Settings</span>
+      </button>
+
+    </div>
+  </nav>
+
+</div>
+<script src="./quiz.js"></script>
+<script>
+  document.addEventListener('DOMContentLoaded', async () => {
+    const usernameInput = document.getElementById('usernameInput');
+    const startBtn = document.getElementById('startQuizBtn');
+    const notifBtn = document.getElementById('notificationWrap');
+    const notifDropdown = document.getElementById('notificationDropdown');
+    const userGreeting = document.getElementById('userGreeting');
+    const usernameName = document.getElementById('usernameName');
+    const themeToggleBtn = document.getElementById('themeToggleBtn');
+    const themeIcon = document.getElementById('themeIcon');
+    
+    const homeSettingAmount = document.getElementById('homeSettingAmount');
+    const homeSettingTime = document.getElementById('homeSettingTime');
+    const homeSettingDifficulty = document.getElementById('homeSettingDifficulty');
+    const homeSettingCategory = document.getElementById('homeSettingCategory');
+    const homeSettingLanguage = document.getElementById('homeSettingLanguage');
+
+    // Theme toggle with animation
+    const savedTheme = localStorage.getItem('quiz_theme') || 'dark';
+    if (savedTheme === 'light') {
+      document.body.classList.add('light-mode');
+      themeIcon.setAttribute('icon', 'lucide:sun');
+    }
+
+    themeToggleBtn.addEventListener('click', () => {
+      // Add spin animation
+      themeIcon.style.transform = 'rotate(360deg)';
+      setTimeout(() => {
+        themeIcon.style.transform = 'rotate(0deg)';
+      }, 400);
+      
+      document.body.classList.toggle('light-mode');
+      const isLight = document.body.classList.contains('light-mode');
+      localStorage.setItem('quiz_theme', isLight ? 'light' : 'dark');
+      
+      setTimeout(() => {
+        themeIcon.setAttribute('icon', isLight ? 'lucide:sun' : 'lucide:moon');
+      }, 200);
+    });
+
+    // Check if user is registered
+    const savedUser = localStorage.getItem('quiz_username');
+    if (savedUser && userGreeting) {
+      userGreeting.classList.remove('hidden');
+      if (usernameName) usernameName.textContent = savedUser;
+    }
+
+    // Load saved settings
+    try {
+      const saved = JSON.parse(localStorage.getItem('quiz_settings') || '{}');
+      if (homeSettingAmount) homeSettingAmount.value = saved.amount || '10';
+      if (homeSettingTime) homeSettingTime.value = saved.time || '10';
+      if (homeSettingDifficulty) homeSettingDifficulty.value = saved.difficulty || 'medium';
+      if (homeSettingCategory) homeSettingCategory.value = saved.category || 'any';
+      if (homeSettingLanguage) homeSettingLanguage.value = saved.language || 'uzb';
+    } catch (e) {}
+
+    // Set language
+    const savedLang = localStorage.getItem('quiz_language') || 'uzb';
+    if (homeSettingLanguage) homeSettingLanguage.value = savedLang;
+    if (window.i18n) window.i18n.setLang(savedLang);
+
+    // Language change handler
+    if (homeSettingLanguage) {
+      homeSettingLanguage.addEventListener('change', () => {
+        const newLang = homeSettingLanguage.value;
+        if (window.i18n) window.i18n.setLang(newLang);
+        // Save to settings
+        try {
+          const cur = JSON.parse(localStorage.getItem('quiz_settings') || '{}');
+          cur.language = newLang;
+          localStorage.setItem('quiz_settings', JSON.stringify(cur));
+        } catch (e) {}
+      });
+    }
+
+    // Populate categories
+    try {
+      const res = await fetch('https://opentdb.com/api_category.php');
+      const data = await res.json();
+      if (data.trivia_categories && homeSettingCategory) {
+        const anyText = window.i18n ? window.i18n.t('any_category') : 'Any Category';
+        homeSettingCategory.innerHTML = `<option value="any">${anyText}</option>`;
+        data.trivia_categories.forEach((c) => {
+          const opt = document.createElement('option');
+          opt.value = c.id;
+          opt.textContent = c.name;
+          homeSettingCategory.appendChild(opt);
+        });
+      }
+    } catch (e) {}
+
+    // Save settings on change
+    [homeSettingAmount, homeSettingTime, homeSettingDifficulty, homeSettingCategory, homeSettingLanguage].forEach((el) => {
+      if (el) {
+        el.addEventListener('change', () => {
+          try {
+            const cur = JSON.parse(localStorage.getItem('quiz_settings') || '{}');
+            cur.amount = homeSettingAmount?.value || '10';
+            cur.time = homeSettingTime?.value || '10';
+            cur.difficulty = homeSettingDifficulty?.value || 'medium';
+            cur.category = homeSettingCategory?.value || 'any';
+            cur.language = homeSettingLanguage?.value || 'uzb';
+            localStorage.setItem('quiz_settings', JSON.stringify(cur));
+          } catch (e) {}
+        });
+      }
+    });
+
+    function updateStart() {
+      const has = usernameInput && usernameInput.value && usernameInput.value.trim().length > 0;
+      if (startBtn) {
+        startBtn.disabled = !has;
+        startBtn.classList.toggle('opacity-60', !has);
+        startBtn.classList.toggle('cursor-not-allowed', !has);
+      }
+      const group = usernameInput && usernameInput.closest('.group');
+      if (group) {
+        const check = group.querySelector('iconify-icon[icon="lucide:check-circle-2"]');
+        if (check) check.classList.toggle('text-accent', has);
+      }
+    }
+
+    if (usernameInput) {
+      updateStart();
+      usernameInput.addEventListener('input', updateStart);
+    }
+
+    // Difficulty buttons
+    const diffButtons = document.querySelectorAll('.mx-4 [data-difficulty]');
+    diffButtons.forEach((btn) => {
+      btn.addEventListener('click', () => {
+        diffButtons.forEach(b => {
+          b.classList.remove('bg-primary/20','border-2','border-primary');
+          b.classList.add('bg-card', 'border-border/50');
+        });
+        btn.classList.remove('bg-card', 'border-border/50');
+        btn.classList.add('bg-primary/20','border-2','border-primary');
+        if (homeSettingDifficulty) homeSettingDifficulty.value = btn.dataset.difficulty || 'medium';
+        try {
+          const key = 'quiz_settings';
+          const cur = JSON.parse(localStorage.getItem(key) || '{}');
+          cur.difficulty = btn.dataset.difficulty || 'medium';
+          localStorage.setItem(key, JSON.stringify(cur));
+        } catch (e) {}
+      });
+    });
+
+    // Initialize difficulty from storage
+    try {
+      const cur = JSON.parse(localStorage.getItem('quiz_settings') || '{}');
+      const want = cur.difficulty || 'medium';
+      const match = Array.from(diffButtons).find(b => b.dataset.difficulty === want);
+      if (match) {
+        diffButtons.forEach(b => {
+          b.classList.remove('bg-primary/20','border-2','border-primary');
+          b.classList.add('bg-card', 'border-border/50');
+        });
+        match.classList.remove('bg-card', 'border-border/50');
+        match.classList.add('bg-primary/20','border-2','border-primary');
+      }
+    } catch (e) { }
+
+    // Bottom nav
+    document.querySelectorAll('nav button').forEach((b) => {
+      const txt = (b.innerText || '').trim();
+      if (/^Play$/i.test(txt)) b.addEventListener('click', () => window.location.href = 'play---quiz.html');
+      if (/^Rank$/i.test(txt) || /^Leaderboard$/i.test(txt)) b.addEventListener('click', () => window.location.href = 'leaderboard.html');
+      if (/^Profile$/i.test(txt)) b.addEventListener('click', () => window.location.href = 'profile.html');
+      if (/^Settings$/i.test(txt)) b.addEventListener('click', () => window.location.href = 'index.html');
+    });
+
+    // Notification toggle
+    if (notifBtn && notifDropdown) {
+      notifBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        notifDropdown.classList.toggle('hidden');
+      });
+      document.addEventListener('click', () => {
+        notifDropdown.classList.add('hidden');
+      });
+    }
+  });
+</script>
+</body>
+</html>
