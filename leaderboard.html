@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quiz Game - Leaderboard</title>
+ 
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&family=Outfit:wght@0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://code.iconify.design/iconify-icon/3.0.0/iconify-icon.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            background: 'var(--background)', foreground: 'var(--foreground)',
+            card: { DEFAULT: 'var(--card)', foreground: 'var(--card-foreground)' },
+            primary: { DEFAULT: 'var(--primary)', foreground: 'var(--primary-foreground)' },
+            secondary: { DEFAULT: 'var(--secondary)', foreground: 'var(--secondary-foreground)' },
+            muted: { DEFAULT: 'var(--muted)', foreground: 'var(--muted-foreground)' },
+            accent: { DEFAULT: 'var(--accent)', foreground: 'var(--accent-foreground)' },
+            destructive: { DEFAULT: 'var(--destructive)', foreground: '#ffffff' },
+            border: 'var(--border)',
+          },
+          fontFamily: {
+            sans: ['var(--font-sans)', 'system-ui', 'sans-serif'],
+            heading: ['var(--font-heading)', 'system-ui', 'sans-serif'],
+          },
+        },
+      },
+    }
+  </script>
+
+  <style>
+    :root {
+      --background: #0a0f1e;
+      --foreground: #f8fafc;
+      --card: #1a1f35;
+      --card-foreground: #ffffff;
+      --primary: #8b5cf6;
+      --primary-foreground: #ffffff;
+      --secondary: #ec4899;
+      --secondary-foreground: #ffffff;
+      --muted: #2d3548;
+      --muted-foreground: #94a3b8;
+      --accent: #06b6d4;
+      --accent-foreground: #ffffff;
+      --destructive: #ef4444;
+      --border: #2d3548;
+      --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+      --font-heading: "Outfit", system-ui, sans-serif;
+    }
+
+    .light-mode {
+      --background: #ffffff;
+      --foreground: #1e293b;
+      --card: #f1f5f9;
+      --card-foreground: #1e293b;
+      --primary: #7c3aed;
+      --secondary: #db2777;
+      --muted: #e2e8f0;
+      --muted-foreground: #64748b;
+      --accent: #0891b2;
+      --destructive: #dc2626;
+      --border: #e2e8f0;
+    }
+
+    body {
+      font-family: var(--font-sans);
+      background-color: var(--background);
+      color: var(--foreground);
+      transition: background-color 0.4s cubic-bezier(0.4, 0, 0.2, 1), 
+                  color 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .light-mode .bg-card\/40 { background-color: rgba(241, 245, 249, 0.7) !important; }
+    .light-mode .bg-card\/90 { background-color: rgba(241, 245, 249, 0.95) !important; }
+    .light-mode .border-white\/5, .light-mode .border-white\/10 { border-color: rgba(226, 232, 240, 0.6) !important; }
+    .light-mode .bg-white\/5 { background-color: rgba(226, 232, 240, 0.5) !important; }
+    .light-mode .bg-primary\/10 { background-color: rgba(124, 58, 237, 0.08) !important; }
+    .light-mode .border-primary\/30 { border-color: rgba(124, 58, 237, 0.25) !important; }
+    .light-mode .bg-primary\/5 { background-color: rgba(124, 58, 237, 0.05) !important; }
+
+    * {
+      transition-property: background-color, border-color, color, fill, stroke;
+      transition-duration: 0.3s;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    button, a { transition: all 0.15s ease !important; }
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+    .light-mode .blur-\[100px\], .light-mode .blur-\[80px\], .light-mode .blur-\[70px\] {
+      opacity: 0.3;
+    }
+
+
+    iconify-icon {
+      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+    }
+  </style>
+  <script src="i18n.js"></script>
+</head>
+<body>
+  <div class="relative min-h-screen bg-background text-foreground font-sans flex flex-col overflow-hidden selection:bg-primary/30">
+  
+  <div class="absolute top-[-10%] right-[-20%] w-[350px] h-[350px] bg-primary/20 rounded-full blur-[100px] pointer-events-none animate-pulse"></div>
+  <div class="absolute bottom-[20%] left-[-10%] w-[300px] h-[300px] bg-secondary/10 rounded-full blur-[80px] pointer-events-none"></div>
+
+  <div class="flex-1 overflow-y-auto pb-24 no-scrollbar">
+    
+    <header class="px-6 pt-12 pb-4 flex justify-between items-center">
+      <div>
+        <p class="text-muted-foreground text-sm font-medium mb-1" data-i18n="weekly_challenge">Weekly Challenge</p>
+        <h1 class="text-3xl font-black tracking-tight text-foreground flex items-center gap-2">
+          <span data-i18n="leaderboard">Leaderboard</span> <iconify-icon icon="lucide:bar-chart-2" class="text-accent text-2xl animate-pulse"></iconify-icon>
+        </h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button id="themeToggleBtn" class="w-12 h-12 rounded-full bg-card border border-white/10 flex items-center justify-center shadow-lg shadow-primary/5 cursor-pointer hover:bg-card/70 transition-all hover:scale-105 active:scale-95">
+          <iconify-icon id="themeIcon" icon="lucide:moon" class="text-foreground text-xl"></iconify-icon>
+        </button>
+        <div id="notificationWrap" class="relative w-12 h-12 rounded-full bg-card border border-white/10 flex items-center justify-center shadow-lg shadow-primary/5 cursor-pointer hover:bg-card/70 transition-all hover:scale-105 active:scale-95">
+          <iconify-icon id="notificationBtn" icon="lucide:bell" class="text-foreground text-xl"></iconify-icon>
+          <div id="notificationDropdown" class="hidden absolute right-0 mt-12 w-64 bg-card/90 backdrop-blur-md border border-white/5 rounded-lg p-3 shadow-xl">
+            <p class="text-sm font-bold mb-2" data-i18n="notifications">Notifications</p>
+            <div id="notificationsList" class="text-xs text-muted-foreground">
+              <div class="py-2" data-i18n="no_notifications">No new notifications</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <div id="podiumSection" class="relative w-full px-4 mt-2 mb-8">
+      <div class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 bg-primary/20 rounded-full blur-[70px] pointer-events-none"></div>
+      <div class="flex items-end justify-center gap-3 h-72 pb-4" id="podiumContainer"></div>
+    </div>
+
+    <div class="mx-4 bg-card/40 backdrop-blur-xl border border-white/5 rounded-[32px] p-2 shadow-xl ring-1 ring-white/5 flex flex-col gap-1" id="leaderboardListContainer"></div>
+
+
+    <div id="profileSection" class="hidden mx-4 bg-card/40 backdrop-blur-xl border border-white/5 rounded-[32px] p-6 shadow-xl ring-1 ring-white/5 mb-4">
+      <div class="flex items-center gap-4 mb-6">
+        <div class="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-accent flex items-center justify-center">
+          <iconify-icon icon="lucide:user" class="text-primary-foreground text-4xl"></iconify-icon>
+        </div>
+        <div class="flex-1">
+          <h2 id="profileUsername" class="text-2xl font-black text-foreground">Player Name</h2>
+          <p id="profileRank" class="text-accent font-bold">Rank: Not ranked</p>
+        </div>
+      </div>
+      
+      <div class="grid grid-cols-2 gap-3 mb-6">
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+          <p class="text-xs text-muted-foreground mb-1" data-i18n="games_played">Games Played</p>
+          <p id="profileGamesPlayed" class="text-2xl font-black text-foreground">0</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+          <p class="text-xs text-muted-foreground mb-1" data-i18n="highest_score">Highest Score</p>
+          <p id="profileHighestScore" class="text-2xl font-black text-primary">0.0</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+          <p class="text-xs text-muted-foreground mb-1" data-i18n="average_score">Average Score</p>
+          <p id="profileAverageScore" class="text-2xl font-black text-accent">0.0</p>
+        </div>
+        <div class="bg-white/5 border border-white/10 rounded-xl p-4">
+          <p class="text-xs text-muted-foreground mb-1" data-i18n="total_xp">Total XP</p>
+          <p id="profileTotalXP" class="text-2xl font-black text-secondary">0.0</p>
+        </div>
+      </div>
+
+      <button id="backToLeaderboardBtn" class="w-full px-4 py-2 bg-primary/20 border border-primary/30 text-primary rounded-xl font-bold hover:bg-primary/30 transition" data-i18n="back_to_leaderboard">
+        Back to Leaderboard
+      </button>
+    </div>
+  </div>
+
+  <nav class="fixed bottom-0 w-full bg-background/80 backdrop-blur-xl border-t border-white/5 pb-safe pt-2 z-50">
+    <div class="flex justify-around items-center h-[70px]">
+      
+      <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <div class="p-1.5 text-muted-foreground group-hover:text-foreground transition-colors">
+          <iconify-icon icon="lucide:gamepad-2" width="24" height="24"></iconify-icon>
+        </div>
+        <span class="text-[10px] font-medium text-muted-foreground group-hover:text-foreground" data-i18n="play">Play</span>
+      </button>
+
+      <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <div class="relative p-1.5 rounded-xl bg-primary/10 text-primary transition-all duration-300">
+          <iconify-icon icon="lucide:trophy" width="24" height="24"></iconify-icon>
+          <div class="absolute -bottom-1 left-1/2 -translate-x-1/2 w-1 h-1 rounded-full bg-primary"></div>
+        </div>
+        <span class="text-[10px] font-bold text-primary" data-i18n="rank">Rank</span>
+      </button>
+
+      <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <div class="p-1.5 text-muted-foreground group-hover:text-foreground transition-colors">
+          <iconify-icon icon="lucide:user" width="24" height="24"></iconify-icon>
+        </div>
+        <span class="text-[10px] font-medium text-muted-foreground group-hover:text-foreground" data-i18n="profile">Profile</span>
+      </button>
+
+      <button class="flex flex-col items-center justify-center w-16 gap-1 group">
+        <div class="p-1.5 text-muted-foreground group-hover:text-foreground transition-colors">
+          <iconify-icon icon="lucide:settings" width="24" height="24"></iconify-icon>
+        </div>
+        <span class="text-[10px] font-medium text-muted-foreground group-hover:text-foreground" data-i18n="settings">Settings</span>
+      </button>
+
+    </div>
+  </nav>
+
+
+</div>
+  <script src="./quiz.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // Set language
+      const savedLang = localStorage.getItem('quiz_language') || 'uzb';
+      if (window.i18n) window.i18n.setLang(savedLang);
+
+      // Theme toggle
+      const themeToggleBtn = document.getElementById('themeToggleBtn');
+      const themeIcon = document.getElementById('themeIcon');
+      const savedTheme = localStorage.getItem('quiz_theme') || 'dark';
+      
+      if (savedTheme === 'light') {
+        document.body.classList.add('light-mode');
+        themeIcon.setAttribute('icon', 'lucide:sun');
+      }
+
+      themeToggleBtn.addEventListener('click', () => {
+        themeIcon.style.transform = 'rotate(360deg)';
+        setTimeout(() => { themeIcon.style.transform = 'rotate(0deg)'; }, 400);
+        
+        document.body.classList.toggle('light-mode');
+        const isLight = document.body.classList.contains('light-mode');
+        localStorage.setItem('quiz_theme', isLight ? 'light' : 'dark');
+        
+        setTimeout(() => {
+          themeIcon.setAttribute('icon', isLight ? 'lucide:sun' : 'lucide:moon');
+        }, 200);
+      });
+
+      // Load top scores
+      let topScores = [];
+      try {
+        const stored = localStorage.getItem('quiz_top_scores_v1');
+        topScores = stored ? JSON.parse(stored) : [];
+      } catch (e) {
+        topScores = [];
+      }
+
+      const currentUser = localStorage.getItem('quiz_username');
+      const icons = ['lucide:ghost', 'lucide:cat', 'lucide:dog'];
+      const colors = ['primary', 'accent', 'secondary'];
+
+      // Render podium
+      const podiumContainer = document.getElementById('podiumContainer');
+      if (podiumContainer) {
+        if (topScores.length === 0) {
+          const noPlayersMsg = window.i18n ? window.i18n.t('no_players_yet') : 'No players registered yet. Be the first!';
+          podiumContainer.innerHTML = `<div class="col-span-full text-center text-muted-foreground text-sm py-8">${noPlayersMsg}</div>`;
+        } else {
+          const positions = [1, 0, 2];
+          positions.forEach((idx) => {
+            if (topScores[idx]) {
+              const score = topScores[idx];
+              const rank = idx + 1;
+              const color = colors[idx];
+              const icon = icons[idx];
+              const isAnimated = rank === 1 ? 'animate-bounce' : '';
+
+
+              let html = `
+                <div class="w-1/3 flex flex-col items-center justify-end z-${rank === 1 ? 20 : 10}${rank === 1 ? ' -mx-1' : ''} group">
+                  <div class="relative mb-3${rank === 1 ? ' ' + isAnimated : ''}" ${rank === 1 ? "style='animation-duration: 3s;'" : ''}>
+                    ${rank === 1 ? '<iconify-icon icon="lucide:crown" class="text-primary text-3xl absolute -top-10 left-1/2 -translate-x-1/2 drop-shadow-[0_0_10px_rgba(139,92,246,0.5)]"></iconify-icon>' : ''}
+                    <div class="w-${rank === 1 ? 24 : 20} h-${rank === 1 ? 24 : 20} rounded-full border-4 border-${color}/50 bg-card flex items-center justify-center overflow-hidden shadow-${rank === 1 ? '[0_0_30px_rgba(139,92,246,0.4)]' : 'lg'} shadow-${color}/20 relative">
+                      ${rank === 1 ? '<div class="absolute inset-0 bg-primary/10 animate-pulse"></div>' : ''}
+                      <iconify-icon icon="${icon}" class="text-${color} text-${rank === 1 ? 5 : 4}xl relative z-10"></iconify-icon>
+                    </div>
+                    <div class="absolute -bottom-3 left-1/2 -translate-x-1/2 bg-${color} text-${color}-foreground text-${rank === 1 ? 'sm' : 'xs'} font-black px-${rank === 1 ? 3 : 2} py-${rank === 1 ? 1 : '0.5'} rounded-full border-${rank === 1 ? 4 : 2} border-background${rank === 1 ? ' shadow-lg' : ''}">
+                      #${rank}
+                    </div>
+                  </div>
+                  <p class="text-foreground font-bold text-${rank === 1 ? 'base' : 'sm'} truncate w-full text-center">${score.name}</p>
+                  <p class="text-${color} text-${rank === 1 ? 'sm' : 'xs'} font-${rank === 1 ? 'black' : 'bold'} mt-1">${score.score.toFixed(1)} XP</p>
+                  <div class="w-full h-${rank === 1 ? 32 : rank === 1 ? 24 : 20} bg-gradient-to-t from-${color}/30 to-${color}/5 mt-3 rounded-t-2xl border-t border-${color}/30 backdrop-blur-${rank === 1 ? 'md' : 'sm'} relative overflow-hidden${rank === 1 ? ' shadow-[0_-10px_40px_rgba(139,92,246,0.2)]' : ''}">
+                    ${rank === 1 ? "<div class='absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50'></div>" : "<div class='absolute inset-0 bg-gradient-to-b from-white/5 to-transparent opacity-50'></div>"}
+                  </div>
+                </div>
+              `;
+              podiumContainer.innerHTML += html;
+            }
+          });
+        }
+      }
+
+      // Render list
+      const listContainer = document.getElementById('leaderboardListContainer');
+      if (listContainer) {
+        if (topScores.length === 0) {
+          const noPlayersMsg = window.i18n ? window.i18n.t('no_players_yet') : 'No players yet. Play a quiz to join the leaderboard!';
+          listContainer.innerHTML = `<div class="text-center text-muted-foreground text-sm py-8">${noPlayersMsg}</div>`;
+        } else {
+          let html = '';
+          topScores.forEach((score, idx) => {
+            const rank = idx + 1;
+            const isUser = currentUser && score.name === currentUser;
+            const bgClass = isUser ? 'bg-primary/10 border-primary/30' : 'bg-white/5 border-white/5';
+            const textColorClass = isUser ? 'text-primary' : 'text-muted-foreground';
+
+
+            html += `
+              <div class="flex items-center gap-4 p-4 rounded-2xl ${bgClass} hover:bg-white/10 transition-colors relative overflow-hidden">
+                ${isUser ? '<div class="absolute inset-0 bg-primary/5 animate-pulse"></div>' : ''}
+                <span class="${textColorClass} font-bold text-sm w-4 text-center relative z-10">${rank}</span>
+                <div class="w-10 h-10 rounded-full bg-card border border-border flex items-center justify-center relative z-10">
+                  <iconify-icon icon="lucide:${icons[idx] || 'user'}" class="text-${textColorClass}"></iconify-icon>
+                </div>
+                <div class="flex-1 relative z-10">
+                  <h3 class="text-foreground font-bold text-sm">${score.name}${isUser ? ' (You)' : ''}</h3>
+                  <p class="${textColorClass} text-[10px] font-medium">Rank #${rank}</p>
+                </div>
+                <div class="text-right relative z-10">
+                  <span class="block text-foreground font-bold text-sm">${score.score.toFixed(1)}</span>
+                  <span class="text-[10px] ${textColorClass} uppercase">XP</span>
+                </div>
+              </div>
+            `;
+          });
+          listContainer.innerHTML = html;
+        }
+      }
+
+      // Profile/Leaderboard toggle
+      const leaderboardSection = document.getElementById('leaderboardListContainer').parentElement.parentElement;
+      const profileSection = document.getElementById('profileSection');
+      const podiumSection = document.getElementById('podiumSection');
+      
+      function showLeaderboard() {
+        if (podiumSection) podiumSection.classList.remove('hidden');
+        if (leaderboardSection) leaderboardSection.classList.remove('hidden');
+        if (profileSection) profileSection.classList.add('hidden');
+        window.location.hash = '';
+      }
+
+      function showProfile() {
+        if (podiumSection) podiumSection.classList.add('hidden');
+        if (leaderboardSection) leaderboardSection.classList.add('hidden');
+        if (profileSection) profileSection.classList.remove('hidden');
+        
+        const currentUser = localStorage.getItem('quiz_username');
+        const topScores = JSON.parse(localStorage.getItem('quiz_top_scores_v1') || '[]');
+        const userScore = topScores.find(s => s.name === currentUser);
+        
+        const usernameEl = document.getElementById('profileUsername');
+        const rankEl = document.getElementById('profileRank');
+        const gamesEl = document.getElementById('profileGamesPlayed');
+        const highestEl = document.getElementById('profileHighestScore');
+        const averageEl = document.getElementById('profileAverageScore');
+        const totalXPEl = document.getElementById('profileTotalXP');
+        
+        if (usernameEl) usernameEl.textContent = currentUser || 'Player';
+        if (userScore && rankEl) rankEl.textContent = `Rank: #${topScores.indexOf(userScore) + 1}`;
+        if (highestEl && userScore) highestEl.textContent = userScore.score.toFixed(1);
+        if (totalXPEl && userScore) totalXPEl.textContent = userScore.score.toFixed(1);
+        if (gamesEl) gamesEl.textContent = '1';
+        if (averageEl && userScore) averageEl.textContent = userScore.score.toFixed(1);
+        
+        window.location.hash = 'profile';
+      }
+      
+      if (window.location.hash === '#profile') {
+        showProfile();
+      }
+      
+      document.querySelectorAll('nav button').forEach((b) => {
+        const txt = (b.innerText || '').trim();
+        if (/^Play$/i.test(txt)) b.addEventListener('click', () => window.location.href = 'play---quiz.html');
+        if (/^Rank$/i.test(txt)) b.addEventListener('click', showLeaderboard);
+        if (/^Profile$/i.test(txt)) b.addEventListener('click', () => window.location.href = 'profile.html');
+        if (/^Settings$/i.test(txt)) b.addEventListener('click', () => window.location.href = 'index.html');
+      });
+      
+      const backBtn = document.getElementById('backToLeaderboardBtn');
+
+      if (backBtn) backBtn.addEventListener('click', showLeaderboard);
+
+      // Notification toggle
+      const notif = document.getElementById('notificationWrap');
+      const dd = document.getElementById('notificationDropdown');
+      if (notif && dd) {
+        notif.addEventListener('click', (e) => { e.stopPropagation(); dd.classList.toggle('hidden'); });
+        document.addEventListener('click', () => dd.classList.add('hidden'));
+      }
+    });
+  </script>
+</body>
+</html>
